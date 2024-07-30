@@ -32,7 +32,7 @@ except mlflow.exceptions.RestException as e:
 with mlflow.start_run() as run:
     clf = RandomForestClassifier(n_estimators=100, random_state=42)
     clf.fit(X_train, y_train)
-
+    
     y_pred = clf.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     print(f'Accuracy: {accuracy}')
@@ -40,6 +40,9 @@ with mlflow.start_run() as run:
     mlflow.log_param('n_estimators', 100)
     mlflow.log_param('random_state', 42)
     mlflow.log_metric('accuracy', accuracy)
+
+    X_test.to_csv("X_test.csv")
+    mlflow.log_artifact("X_test.csv")
     mlflow.sklearn.log_model(clf, "model")
 
     client.create_model_version(

@@ -1,21 +1,34 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+FROM spark:3.5.1-scala2.12-java17-ubuntu
 
-# Set the working directory in the container
-WORKDIR /usr/app
+USER root
 
-# Copy the requirements file into the container at /usr/src/app
-COPY requirements.txt ./
+RUN set -ex; \
+    apt-get update; \
+    apt-get install -y python3 python3-pip; \
+    rm -rf /var/lib/apt/lists/*
 
-# Install any needed packages specified in requirements.txt
+WORKDIR /app
+
+COPY . /app
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /usr/src/app
-COPY . .
+RUN chmod +x /app/entrypoint.sh
 
-COPY entrypoint.sh ./
-
-RUN chmod +x entrypoint.sh
-
-# Use the entrypoint script to run the container
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]

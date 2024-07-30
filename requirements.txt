@@ -1,3 +1,5 @@
-mlflow
+mlflow==2.14.3
 pandas
 scikit-learn
+dagster
+flask

@@ -1,0 +1,5 @@
+services:
+  mlops_main:
+    build: ./
+    working_dir: /app
+    command: /app/entrypoint.sh 
