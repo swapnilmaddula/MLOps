@@ -24,10 +24,7 @@ model_name = "sk-learn-random-forest-reg-model"
 try:
     client.create_registered_model(model_name)
 except mlflow.exceptions.RestException as e:
-    if "RESOURCE_ALREADY_EXISTS" in str(e):
-        print(f"Model '{model_name}' already exists.")
-    else:
-        raise e
+    print(e)
 
 with mlflow.start_run() as run:
     clf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -40,9 +37,6 @@ with mlflow.start_run() as run:
     mlflow.log_param('n_estimators', 100)
     mlflow.log_param('random_state', 42)
     mlflow.log_metric('accuracy', accuracy)
-
-    X_test.to_csv("X_test.csv")
-    mlflow.log_artifact("X_test.csv")
     mlflow.sklearn.log_model(clf, "model")
 
     client.create_model_version(
@@ -53,9 +47,3 @@ with mlflow.start_run() as run:
 
     print(f'Model version registered and logged in MLflow')
 
-latest_model_uri = f"models:/{model_name}/latest"
-loaded_model = mlflow.pyfunc.load_model(model_uri=latest_model_uri)
-
-test_data = pd.read_csv("Data/test_data.csv")
-predictions = loaded_model.predict(test_data)
-print(predictions)
